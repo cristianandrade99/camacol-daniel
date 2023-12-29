@@ -1,12 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Table, Form, FormControl, Button, Modal } from 'react-bootstrap';
 
 import { FaSave, FaCheck, FaTrash, FaPlus, FaChevronUp, FaChevronDown } from 'react-icons/fa';
 import './StageFormEdit.css';
-import { exteriorFinishDataStage } from '../../utils';
+import { innerFinishDataStage } from '../../utils';
 import { COMPANIES } from '../../helpers/constants';
+import InnerExternalCheckboxes from '../InnerExternalCheckboxes/InnerExternalCheckboxes';
 
-const ProjectStageFormEdit = ({ etapa, allStagesCompanies, setAllStageCompanies }) => {
+const ProjectStageFormEdit = ({
+  etapa,
+  allStagesCompanies,
+  setAllStageCompanies,
+  allStagesInnerFinished,
+  setInnerFinishedDataGlobal
+}) => {
   const [answers, setAnswers] = useState(etapa);
   const [hasSalesRoom, setHasSalesRoom] = useState('');
   const [showSalesRoomQuestion, setShowSalesRoomQuestion] = useState(false);
@@ -42,6 +49,19 @@ const ProjectStageFormEdit = ({ etapa, allStagesCompanies, setAllStageCompanies 
       novedad: ''
     }
   ]);
+  const [innerFinishedData, setInnerFinishedData] = useState(
+    allStagesInnerFinished
+      .filter(({ etapa: stageId }) => stageId === etapa.id)
+      .reduce((prev, { categoria, acabado }) => {
+        if (prev[categoria]) {
+          prev[categoria].push(acabado);
+        } else {
+          prev[categoria] = [acabado];
+        }
+        return prev;
+      }, {})
+  );
+
   const handleSubmit = async e => {
     e.preventDefault();
     //console.log("Respuestas:", answers);
@@ -227,33 +247,11 @@ const ProjectStageFormEdit = ({ etapa, allStagesCompanies, setAllStageCompanies 
     }
   };
 
-  const handleSaveData = () => {
-    const data = ['Constructora', 'Vendedora', 'Gerencia'].map((key, index) => {
-      return {
-        Compañia: index,
-        nombre: answers[`${key}nombre`],
-        nit: answers[`${key}nit`],
-        direccion: answers[`${key}direccion`],
-        telefono: answers[`${key}telefono`]
-      };
-    });
-    //console.log(data);
-    // const constructoraData = {
-    //   Compañía: "0",
-    //   nit: answers.constructoraNIT,
-    //   direccion: answers.constructoraDireccion,
-    //   nombre: answers.constructoraNombre,
-    //   telefono: answers.constructoraTelefono,
-    //   // correo: answers.constructoraCorreo,
-    // };
-  };
-  const handleNumericInput = e => {
-    const inputValue = e.target.value;
-    // Filtrar solo números
-    const filteredValue = inputValue.replace(/[^0-9]/g, '');
-
-    e.target.value = filteredValue;
-  };
+  useEffect(() => {
+    console.log('useEffect');
+    console.log({ etapaId: etapa.id, innerFinishedData });
+    setInnerFinishedDataGlobal(etapa.id, innerFinishedData);
+  }, [innerFinishedData]);
 
   return (
     <div className='form-container'>
@@ -439,20 +437,6 @@ const ProjectStageFormEdit = ({ etapa, allStagesCompanies, setAllStageCompanies 
               </div>
             </tbody>
 
-            {/* <Button
-              style={{
-                backgroundColor: buttonClicked ? 'gray' : '#00ACC1',
-                color: 'white',
-                marginTop: '20px'
-              }}
-              onClick={() => {
-                handleSaveData();
-                setButtonClicked(true);
-              }}
-              disabled={buttonClicked}>
-              <FaSave style={{ marginRight: '5px', marginBottom: '5px' }} />
-              Guardar datos
-            </Button> */}
             {showSuccessMessage && (
               <div style={{ color: 'green', marginTop: '10px' }}>
                 <FaCheck style={{ marginRight: '5px' }} />
@@ -570,8 +554,65 @@ const ProjectStageFormEdit = ({ etapa, allStagesCompanies, setAllStageCompanies 
                       />
                     </td>
                   ))}
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+          <Button onClick={agregarFilaTipo}>
+            <FaPlus style={{ marginRight: '5px', marginBottom: '5px' }} /> Agregar Nuevo Tipo
+          </Button>
+        </div>
+        <div
+          style={{
+            marginTop: '40px',
+            backgroundColor: '#EAEAEA',
+            padding: '20px',
+            borderRadius: '10px'
+          }}>
+          <div className='acordeon-container'>
+            <h4 style={{ marginBottom: '30px' }}>
+              <strong>
+                A continuación, vamos a hablar de los tipos que se construirán en este proyecto. Por favor para cada tipo de esta etapa
+                responder cada una de las preguntas.
+              </strong>
+            </h4>
+            <label style={{ marginBottom: '30px' }}>
+              Pregunta 1: A continuación, es posible seleccionar cada especificación de acuerdo a las características{' '}
+            </label>
+            <div className='acordeon-header'>
+              <Button
+                className='center-button'
+                style={{
+                  backgroundColor: '#3b71ca',
+                  color: 'white',
+                  marginTop: '50px'
+                }}
+                variant='link'
+                onClick={toggleTableVisibility1}>
+                {isTableVisible1 ? <FaChevronUp /> : <FaChevronDown />}
+                &nbsp;&nbsp; {/* Espacio entre el icono y el texto del botón */}
+                {isTableVisible1 ? 'Contraer P 1' : 'Mostrar P 1'}
+              </Button>
+            </div>
+            {isTableVisible1 && (
+              <InnerExternalCheckboxes originalFields={innerFinishDataStage} data={innerFinishedData} setData={setInnerFinishedData} />
+            )}
+          </div>
+        </div>
+      </div>
+      <label>Observación:</label>
+      <textarea value={answers.observacion_etapa} onChange={e => handleAnswerChange('observacion_etapa', e.target.value)} />
+      <div style={{ display: 'flex' }}>
+        <button style={{ marginRight: '5px', flex: 1 }} onClick={handleSubmit}>
+          Enviar
+        </button>
+      </div>
+    </div>
+  );
+};
+export default ProjectStageFormEdit;
 
-                  {/* <td>
+/* <td>
                     <Form.Control
                       type='text'
                       name='nombre'
@@ -848,114 +889,4 @@ const ProjectStageFormEdit = ({ etapa, allStagesCompanies, setAllStageCompanies 
                     <Button style={{ backgroundColor: '#EF5350', color: 'white' }} onClick={() => eliminarTipo(index)}>
                       <FaTrash />
                     </Button>
-                  </td> */}
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-          <Button onClick={agregarFilaTipo}>
-            <FaPlus style={{ marginRight: '5px', marginBottom: '5px' }} /> Agregar Nuevo Tipo
-          </Button>
-        </div>
-        <div
-          style={{
-            marginTop: '40px',
-            backgroundColor: '#EAEAEA',
-            padding: '20px',
-            borderRadius: '10px'
-          }}>
-          <div className='acordeon-container'>
-            <h4 style={{ marginBottom: '30px' }}>
-              <strong>
-                A continuación, vamos a hablar de los tipos que se construirán en este proyecto. Por favor para cada tipo de esta etapa
-                responder cada una de las preguntas.
-              </strong>
-            </h4>
-            <label style={{ marginBottom: '30px' }}>
-              Pregunta 1: A continuación, es posible seleccionar cada especificación de acuerdo a las características{' '}
-            </label>
-            <div className='acordeon-header'>
-              <Button
-                className='center-button'
-                style={{
-                  backgroundColor: '#3b71ca',
-                  color: 'white',
-                  marginTop: '50px'
-                }}
-                variant='link'
-                onClick={toggleTableVisibility1}>
-                {isTableVisible1 ? <FaChevronUp /> : <FaChevronDown />}
-                &nbsp;&nbsp; {/* Espacio entre el icono y el texto del botón */}
-                {isTableVisible1 ? 'Contraer P 1' : 'Mostrar P 1'}
-              </Button>
-            </div>
-            {isTableVisible1 && (
-              <div className='acordeon-body'>
-                <div id='exteriores' class='table-responsive'>
-                  <Table striped bordered hover>
-                    <thead>
-                      <tr>
-                        <th>
-                          <strong>Id</strong>
-                        </th>
-                        <th>
-                          <strong>Nombre</strong>
-                        </th>
-                        <th>
-                          <strong>Residencial</strong>
-                        </th>
-                        <th>
-                          <strong>No Residencial</strong>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {exteriorFinishDataStage.map(row => (
-                        <tr key={row.id}>
-                          <td>{row.id}</td>
-                          <td>{row.nombre}</td>
-                          <td>
-                            {Object.entries(row.residencial).map(([optionId, optionLabel]) => (
-                              <div key={optionId}>
-                                <Form.Check
-                                  type='checkbox'
-                                  label={optionLabel}
-                                  checked={answers?.q18?.[row.id]?.includes(optionId.toString()) || false}
-                                  onChange={() => handleOptionSelectExterior(row.id, optionId.toString())}
-                                />
-                              </div>
-                            ))}
-                          </td>
-                          <td>
-                            {Object.entries(row.noResidencial).map(([optionId, optionLabel]) => (
-                              <div key={optionId}>
-                                <Form.Check
-                                  type='checkbox'
-                                  label={optionLabel}
-                                  checked={answers?.q18?.[row.id]?.includes(optionId.toString()) || false}
-                                  onChange={() => handleOptionSelectExterior(row.id, optionId.toString())}
-                                />
-                              </div>
-                            ))}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </Table>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-      <label>Observación:</label>
-      <textarea value={answers.observacion_etapa} onChange={e => handleAnswerChange('observacion_etapa', e.target.value)} />
-      <div style={{ display: 'flex' }}>
-        <button style={{ marginRight: '5px', flex: 1 }} onClick={handleSubmit}>
-          Enviar
-        </button>
-      </div>
-    </div>
-  );
-};
-export default ProjectStageFormEdit;
+                  </td> */

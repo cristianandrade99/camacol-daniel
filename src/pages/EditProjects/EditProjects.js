@@ -14,6 +14,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './style.css';
 import CustomDropdownMenuTwo from '../DropdownMenuTwo/CustomDropdownMenuTwo';
 import ProjectStageFormEdit from '../../Components/ProjectStageFormEdit/ProjectStageFormEdit';
+import InnerExternalCheckboxes from '../../Components/InnerExternalCheckboxes/InnerExternalCheckboxes';
 import {
   COMPANIES,
   bogotaLocalidades,
@@ -72,33 +73,6 @@ const queryGETBackend = async path => {
   return data;
 };
 
-const getAcabadosExterioresCheckboxes = (checkboxOptions, acabadosExterioresFetch, row, setAcabadosExterioresFetch) =>
-  checkboxOptions.map(([id, label]) => {
-    const currentValues = acabadosExterioresFetch[row.id] || [];
-    const isChecked = currentValues?.includes(+id) || false;
-    return (
-      <div>
-        <Form.Check
-          type='checkbox'
-          label={label}
-          checked={isChecked}
-          onChange={event => {
-            setAcabadosExterioresFetch(prev => {
-              let newValues;
-              if (isChecked) {
-                newValues = currentValues.filter(item => item !== +id);
-              } else {
-                newValues = [...currentValues, +id];
-              }
-              const updatedState = { ...prev, [row.id]: newValues };
-              //console.log('Nuevos valores Tabla acabados:', updatedState);
-              return updatedState;
-            });
-          }}
-        />
-      </div>
-    );
-  });
 const getTechnicalFeauresCheckboxes = (checkboxOptions, caracteristicasFetch, row, setCaracteristicasFetch) =>
   checkboxOptions.map(([id, label]) => {
     // const currentValues = caracteristicasFetch[row.id] || [];
@@ -136,6 +110,7 @@ const InsertarProyectoForm = () => {
     q26: []
   });
   const [allStagesCompanies, setAllStageCompanies] = useState([]);
+  const [allStagesInnerFinished, setAllStagesInnerFinished] = useState([]);
   const [codigoProyecto, setCodigoProyecto] = useState('');
   const [nombreProyecto, setNombreProyecto] = useState('');
   const [longitud, setLongitud] = useState('');
@@ -536,8 +511,6 @@ const InsertarProyectoForm = () => {
           // Acabados interiores
           const stageInnerFinished = await queryGETBackend(`acabado_interior_list/id_etapa=${item.id}/`);
 
-          console.log({});
-
           return { stageId: item.id, allCurrentCompanies, stageTypeData, stageDotationsData, stageHistoricSales, stageInnerFinished };
         })
       );
@@ -561,10 +534,21 @@ const InsertarProyectoForm = () => {
           }))
         );
       }, []);
-      //console.log('Responses stages companies', responses);
-      //console.log('Responses listStageNew', listStageProyectoArrayNew);
+
+      const allStagesInnerFinishedNew = responses.reduce((prev, { stageId, stageInnerFinished }) => {
+        return prev.concat(
+          stageInnerFinished.map(item => ({
+            ...(item.id && { id: item.id }),
+            categoria: item.categoria,
+            acabado: item.acabado,
+            etapa: stageId
+          }))
+        );
+      }, []);
+
       setListStageProyectoArray(listStageData);
       setAllStageCompanies(listStageProyectoArrayNew);
+      setAllStagesInnerFinished(allStagesInnerFinishedNew);
     };
     asyncFunction();
   }, []);
@@ -665,6 +649,20 @@ const InsertarProyectoForm = () => {
     const company_etapa = await queryBackend('PATCH', 'company_etapa/', allStagesCompanies);
     //console.log('compañias actualizados correctamente', stagesCompaniesResponse);
 
+    /**
+        "id": "0cd16753-b4ea-47aa-a7f7-e5468a8ebf2c",
+        "comment": null,
+        "is_active": true,
+        "id_tipo": "12345_098",
+        "nombre": "qwerty",
+        "tipo_vivienda": 1,
+        "uso": 3,
+        "numero_unidades": 2,
+        "area_unidades_area_disponible": 123,
+        "fecha_creado": "2023-10-27T02:16:23.069438Z",
+        "fecha_modificado": "2023-10-27T02:16:23.069504Z",
+        "etapa": "2f1a33a5-aa04-424e-bd8e-b8efd8b01690"
+     */
     const cambiar_datos_tipo = await queryBackend('PATCH', 'cambiar_datos_tipo/', [
       {
         id_tipo: null,
@@ -677,6 +675,70 @@ const InsertarProyectoForm = () => {
       }
     ]);
 
+    /*
+    [
+    {
+        "id": 2045,
+        "is_active": true,
+        "alcoba": null,
+        "baño": null,
+        "dotacion_3": null,
+        "dotacion_4": null,
+        "dotacion_5": null,
+        "tipo": "74d2e1eb-d7d8-4520-bce7-599ebb7e6202"
+    },
+    {
+        "id": 2048,
+        "is_active": true,
+        "alcoba": null,
+        "baño": null,
+        "dotacion_3": "8",
+        "dotacion_4": "12",
+        "dotacion_5": "15",
+        "tipo": "74d2e1eb-d7d8-4520-bce7-599ebb7e6202"
+    },
+    {
+        "id": 2049,
+        "is_active": true,
+        "alcoba": null,
+        "baño": null,
+        "dotacion_3": "8",
+        "dotacion_4": "12",
+        "dotacion_5": "15",
+        "tipo": "74d2e1eb-d7d8-4520-bce7-599ebb7e6202"
+    },
+    {
+        "id": 2050,
+        "is_active": true,
+        "alcoba": null,
+        "baño": null,
+        "dotacion_3": "8",
+        "dotacion_4": "12",
+        "dotacion_5": "15",
+        "tipo": "74d2e1eb-d7d8-4520-bce7-599ebb7e6202"
+    },
+    {
+        "id": 2051,
+        "is_active": true,
+        "alcoba": null,
+        "baño": null,
+        "dotacion_3": "8",
+        "dotacion_4": "12",
+        "dotacion_5": "15",
+        "tipo": "74d2e1eb-d7d8-4520-bce7-599ebb7e6202"
+    },
+    {
+        "id": 2052,
+        "is_active": true,
+        "alcoba": null,
+        "baño": null,
+        "dotacion_3": "20",
+        "dotacion_4": "12",
+        "dotacion_5": "15",
+        "tipo": "74d2e1eb-d7d8-4520-bce7-599ebb7e6202"
+    }
+]
+    */
     const datos_dotacion_detail = await queryBackend('PATCH', 'datos_dotacion_detail/', [
       {
         tipo: null,
@@ -688,6 +750,22 @@ const InsertarProyectoForm = () => {
       }
     ]);
 
+    /*
+    [
+    {
+        "id": 6341,
+        "precios_miles": 0.0,
+        "precios_m2_miles": 0.0,
+        "novedad": "5",
+        "fecha_creado": "2023-12-28T17:26:10.039064Z",
+        "fecha_modificado": "2023-12-28T17:26:10.039096Z",
+        "venta": 5,
+        "renuncias": 5,
+        "saldo": 5,
+        "tipo": "4c139a5d-ecbd-427a-8458-3f442b617659"
+    }
+]
+    */
     const datos_historico_ventas_unidades_detail = await queryBackend('PATCH', 'datos_historico_ventas_unidades_detail/', [
       {
         tipo: null,
@@ -699,11 +777,45 @@ const InsertarProyectoForm = () => {
         novedad: null
       }
     ]);
+
+    /*
+    {
+        "id": 2,
+        "comment": null,
+        "categoria": 67, -> Id junto con Nombre
+        "acabado": 205,
+        "etapa": "3a0d1744-f96e-4e3d-b333-04ffdfc9ceaf"
+    },
+    {
+        "id": 3,
+        "comment": null,
+        "categoria": 232,
+        "acabado": 249,
+        "etapa": "3a0d1744-f96e-4e3d-b333-04ffdfc9ceaf"
+    },
+    */
+    const acabado_interior = await queryBackend('PATCH', 'acabado_interior/', allStagesInnerFinished);
   };
 
   if (!exteriorFinishData || exteriorFinishData.length === 0) {
     return <div>Cargando datos...</div>;
   }
+
+  const setInnerFinishedDataGlobal = (stageId, params) => {
+    setAllStagesInnerFinished(prev => {
+      const allWithoutStage = prev.filter(item => item.etapa !== stageId);
+      const newAllStagesInnerFinished = allWithoutStage.concat(
+        Object.entries(params).reduce(
+          (prev, [categoryId, finishedIds]) =>
+            prev.concat(finishedIds.map(id => ({ categoria: +categoryId, acabado: id, etapa: stageId }))),
+          []
+        )
+      );
+      console.log('setInnerFinishedDataGlobal');
+      console.log({ stageId, params, prev, newAllStagesInnerFinished });
+      return newAllStagesInnerFinished;
+    });
+  };
 
   return (
     <div>
@@ -1533,58 +1645,11 @@ const InsertarProyectoForm = () => {
                     </Button>
                   </div>
                   {isTableVisible28 && (
-                    <div className='acordeon-body'>
-                      <div id='acabados' className='table-responsive'>
-                        <Table striped bordered hover>
-                          <thead>
-                            <tr>
-                              <th>
-                                <strong>Id</strong>
-                              </th>
-                              <th>
-                                <strong>Nombre</strong>
-                              </th>
-                              <th>
-                                <strong>Residencial</strong>
-                              </th>
-                              <th>
-                                <strong>No Residencial</strong>
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {exteriorFinishData.map(row => {
-                              const isResidencial = !Array.isArray(row.residencial);
-                              const checkboxOptions = Object.entries(row[isResidencial ? 'residencial' : 'noResidencial']);
-                              return (
-                                <tr key={row.id}>
-                                  <td>{row.categoria}</td>
-                                  <td>{row.nombre}</td>
-                                  <td>
-                                    {isResidencial &&
-                                      getAcabadosExterioresCheckboxes(
-                                        checkboxOptions,
-                                        acabadosExterioresFetch,
-                                        row,
-                                        setAcabadosExterioresFetch
-                                      )}
-                                  </td>
-                                  <td>
-                                    {!isResidencial &&
-                                      getAcabadosExterioresCheckboxes(
-                                        checkboxOptions,
-                                        acabadosExterioresFetch,
-                                        row,
-                                        setAcabadosExterioresFetch
-                                      )}
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </Table>
-                      </div>
-                    </div>
+                    <InnerExternalCheckboxes
+                      originalFields={exteriorFinishData}
+                      data={acabadosExterioresFetch}
+                      setData={setAcabadosExterioresFetch}
+                    />
                   )}
                 </div>
               </div>
@@ -1688,6 +1753,8 @@ const InsertarProyectoForm = () => {
                             etapa={stage}
                             allStagesCompanies={allStagesCompanies}
                             setAllStageCompanies={setAllStageCompanies}
+                            allStagesInnerFinished={allStagesInnerFinished}
+                            setInnerFinishedDataGlobal={setInnerFinishedDataGlobal}
                           />
                         </div>
                       )}

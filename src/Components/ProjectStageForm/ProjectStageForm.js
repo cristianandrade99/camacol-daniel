@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom';
 import { FaTrash, FaPlus, FaCog, FaSave, FaChevronUp, FaChevronDown, FaCheck } from 'react-icons/fa';
 import { Table, Form, Button, Modal } from 'react-bootstrap';
 import '../../pages/CreateEtapa/CreateEtapa.css';
-import { exteriorFinishDataStage } from '../../utils';
+import { innerFinishDataStage } from '../../utils';
 import { v4 as uuidv4 } from 'uuid';
 
 const ProjectStageForm = (
@@ -36,7 +36,6 @@ const ProjectStageForm = (
     //   agregarFilaTipo,
     //   toggleTableVisibility1,
     //   isTableVisible1,
-    //   exteriorFinishDataTwo,
     //   handleOptionSelectExterior,
   }
 ) => {
@@ -1526,7 +1525,7 @@ const ProjectStageForm = (
                       </tr>
                     </thead>
                     <tbody>
-                      {exteriorFinishDataStage.map(row => (
+                      {innerFinishDataStage.map(row => (
                         <tr key={row.id}>
                           <td>{row.id}</td>
                           <td>{row.nombre}</td>

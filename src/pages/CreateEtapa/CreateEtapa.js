@@ -9,7 +9,7 @@ import Toolbar from '@mui/material/Toolbar';
 import { useParams } from 'react-router-dom';
 import CustomDropdownMenuTwo from '../DropdownMenuTwo/CustomDropdownMenuTwo';
 import './CreateEtapa.css';
-import { exteriorFinishDataStage } from '../../utils';
+import { innerFinishDataStage } from '../../utils';
 import ProjectStageForm from '../../Components/ProjectStageForm/ProjectStageForm';
 
 const StageProject = ({ usoProyecto }) => {

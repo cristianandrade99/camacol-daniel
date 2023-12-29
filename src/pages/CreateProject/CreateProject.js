@@ -21,6 +21,7 @@ import { ZonasComunes, opcionesDepartamentoCiudadZona } from '../../utils';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import CustomDropdownMenuTwo from '../DropdownMenuTwo/CustomDropdownMenuTwo';
+import { exteriorFinishData } from '../../helpers/constants';
 
 const CreateProject = () => {
   const [answers, setAnswers] = useState({ q28: {} }, { q27: {} }, { q26: {} });
@@ -246,112 +247,6 @@ const CreateProject = () => {
     { 5: 'Tradicional' },
     { 6: 'Vivienda para exportar' },
     { 99: 'Sin Asignar' }
-  ];
-
-  const exteriorFinishData = [
-    {
-      id: 1,
-      nombre: 'Fachada R',
-      residencial: {
-        6: 'Bloque de arcilla',
-        7: 'Caraplast',
-        8: 'Concreto a la vista',
-        9: 'Graniplast',
-        10: 'Mármol',
-        11: 'Ladrillo a la vista',
-        12: 'Pañete, estuco, pintura',
-        13: 'Piedra',
-        14: 'Tableta arcilla',
-        15: 'No responde',
-        16: 'No aplica',
-        17: 'Otro',
-        353: 'Sin definir',
-        417: 'Porcelanato',
-        418: 'Vidrio'
-      },
-      noResidencial: []
-    },
-    {
-      id: 2,
-      nombre: 'Cubiertas R',
-      residencial: {
-        18: 'Placa en concreto',
-        19: 'Teja arcilla',
-        20: 'Teja fibrocemento',
-        21: 'Teja plastica',
-        22: 'Teja termoacústica',
-        23: 'Teja zinc',
-        24: 'No responde',
-        25: 'No aplica',
-        26: 'Otro',
-        352: 'Sin definir'
-      },
-      noResidencial: []
-    },
-    {
-      id: 5,
-      nombre: 'Ventanería R - NR',
-      residencial: {
-        47: 'Aluminio',
-        48: 'PVC',
-        49: 'Acero',
-        50: 'No responde',
-        51: 'No aplica',
-        52: 'Otro',
-        349: 'Sin definir'
-      },
-      noResidencial: {
-        27: 'Bloque de hormigon',
-        28: 'Bloque de arcilla',
-        29: 'Concreto a la vista',
-        30: 'Graniplast',
-        31: 'Mármol',
-        32: 'Ladrillo a la vista',
-        33: 'Pañete, estuco, pintura',
-        34: 'Piedra',
-        35: 'Vidrio',
-        36: 'No responde',
-        37: 'No aplica',
-        38: 'Otro',
-        351: 'Sin definir'
-      }
-    },
-    {
-      id: 3,
-      nombre: 'Fachada NR',
-      residencial: [],
-      noResidencial: {
-        27: 'Bloque de hormigon',
-        28: 'Bloque de arcilla',
-        29: 'Concreto a la vista',
-        30: 'Graniplast',
-        31: 'Mármol',
-        32: 'Ladrillo a la vista',
-        33: 'Pañete, estuco, pintura',
-        34: 'Piedra',
-        35: 'Vidrio',
-        36: 'No responde',
-        37: 'No aplica',
-        38: 'Otro',
-        351: 'Sin definir'
-      }
-    },
-    {
-      id: 4,
-      nombre: 'Cubiertas NR',
-      residencial: [],
-      noResidencial: {
-        39: 'Placa en concreto',
-        40: 'Teja arcilla',
-        41: 'Teja fibrocemento',
-        42: 'Teja plástica',
-        43: 'Teja termoacústica',
-        44: 'No responde',
-        45: 'No aplica',
-        46: 'Otro',
-        350: 'Sin definir'
-      }
-    }
   ];
 
   const handleOptionSelectExterior = (id, option) => {
