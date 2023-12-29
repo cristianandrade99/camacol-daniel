@@ -1,0 +1,248 @@
+.App {
+  font-family: sans-serif;
+  text-align: center;
+}
+
+/* styles.css */
+/* Estilos para la barra de navegación */
+.nav-bar {
+  background-color: #1365ff;
+  color: white;
+  padding: 10px 0;
+  text-align: center;
+  border: 1px solid;
+}
+
+/* Estilos para el contenedor */
+.container_menu {
+  background-color: #3498db;
+  color: rgb(0, 0, 0);
+  padding: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 50px;
+  margin: auto;
+  width: 80%;
+  /* border:  1px solid; */
+}
+.container_nav {
+  padding: 20px;
+  border-radius: 50px;
+}
+.custom-button {
+  background-color: red;
+  color: white;
+  /* Agrega más estilos según sea necesario */
+}
+
+#clearButton {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+/* Estilos para la tabla */
+.basic-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.basic-table th,
+.basic-table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+/* Estilos para las celdas de encabezado */
+.basic-table th {
+  background-color: #f2f2f2;
+}
+
+/* Estilos para las celdas de datos */
+.basic-table td {
+  background-color: #fff;
+}
+
+/* Estilos para la celda seleccionada */
+.cell.selected {
+  background-color: #ffc107;
+}
+
+/* Estilos para la celda resaltada en la búsqueda */
+.cell.highlighted {
+  background-color: #ffff99;
+}
+
+.navbar {
+  background-color: #007bff;
+}
+
+.navbar-brand {
+  color: white; /* Cambiar el color del texto de los enlaces */
+  font-size: 24px; /* Cambiar el tamaño del texto de los enlaces */
+}
+
+#clearButton {
+  margin-left: 20px; /* Añadir margen izquierdo al botón */
+}
+
+/* Personalizar el botón de "Salir" */
+#clearButton.btn {
+  font-weight: bold;
+}
+
+#clearButton.btn:hover {
+  background-color: #dc3545; /* Cambiar el color de fondo al pasar el ratón sobre el botón */
+  color: white; /* Cambiar el color del texto al pasar el ratón sobre el botón */
+}
+
+.nav-button {
+  background-color: #007bff; /* Color de fondo azul para los botones de navegación */
+  color: #fff; /* Texto en color blanco */
+  border: none; /* Eliminar borde del botón */
+  padding: 8px 16px; /* Ajustar el espaciado interno del botón */
+  border-radius: 4px; /* Agregar esquinas redondeadas */
+  cursor: pointer; /* Cambiar el cursor al pasar el ratón */
+  margin-right: 10px; /* Agregar espacio entre botones */
+}
+
+.nav-button:hover {
+  background-color: #0056b3;
+}
+
+.tab-button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tab-button.active {
+  background-color: #0056b3;
+}
+
+.tab-button:hover {
+  background-color: #0056b3;
+}
+
+.editar-button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.editar-button:hover {
+  background-color: #0056b3;
+}
+
+.crear-button {
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.crear-button:hover {
+  background-color: #218838;
+}
+
+.table th {
+  background-color: #007bff;
+  color: #fff;
+  font-size: 1.2em;
+  font-weight: bold;
+  padding: 10px;
+}
+
+.table th:hover {
+  background-color: #0056b3;
+}
+
+.input-group-text {
+  background-color: #fff;
+  border: none;
+}
+
+/* .form-control {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.1);
+  padding: 8px;
+  width: 200px;
+  border-radius: 10px !important;
+} */
+
+.form-control:focus {
+  border-color: #007bff;
+  box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.2);
+}
+
+.input-group-text .fa-search {
+  color: #555;
+  font-size: 1em;
+}
+
+.pagination {
+  display: flex;
+  list-style: none;
+  padding: 0;
+}
+
+.page-item {
+  margin: 0 4px;
+}
+
+.page-link {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  color: #333;
+  text-decoration: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.table-responsive{
+  width: 90%;
+  margin: auto;
+}
+
+.page-link:hover {
+  background-color: #f2f2f2;
+}
+
+.active .page-link {
+  background-color: #007bff;
+  color: #fff;
+  border: 1px solid #007bff;
+}
+
+.container-search{
+  width: 90%;
+  margin: auto;
+}
+
+@media screen and (max-width: 767px) {
+  #clearButton {
+    display: none;
+  }
+}
+@media screen and (max-width: 500px) {
+  .table-responsive {
+    width: 100%;
+  }
+}

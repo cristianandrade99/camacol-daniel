@@ -1,0 +1,12 @@
+.menu-list {
+  opacity: 0;
+  max-height: 0;
+  transition: opacity 0.3s ease, max-height 0.3s ease;
+}
+
+.menu-list.active {
+  opacity: 1;
+  max-height: 200px;
+}
+
+

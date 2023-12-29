@@ -1,0 +1,339 @@
+/* Estilos para el formulario */
+form {
+  max-width: 95%;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f7f7f7;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+/* Estilos para los elementos del formulario */
+form div {
+  margin-bottom: 20px;
+}
+
+label {
+  font-weight: bold;
+}
+.container_nav {
+  padding: 20px;
+  border-radius: 50px;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="number"],
+select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+button[type="submit"] {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+div label {
+  text-align: left;
+  display: block;
+  margin-bottom: 5px;
+  padding-left: 13%;
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 90%;
+}
+
+.item {
+  flex-direction: column;
+  margin-right: 2%;
+  margin: auto;
+  width: 30.28%;
+}
+
+input[type="date"],
+input[type="text"][readonly] {
+  background-color: #eee;
+}
+
+.select-tipovia,
+.select-punto-cardinal {
+  width: 100%;
+}
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%232c3e50' viewBox='0 0 16 16'%3E%3Cpath d='M12 4l-8 8-4-4 1.5-1.5L4 10l6.5-6.5L12 4z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+
+button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+p {
+  background-color: #f0f0f0;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-top: 5px;
+}
+
+.nav-button {
+  background-color: #ffffff; /* Color de fondo azul para los botones de navegación */
+  color: #000000; /* Texto en color blanco */
+  border: none; /* Eliminar borde del botón */
+  padding: 8px 16px; /* Ajustar el espaciado interno del botón */
+  border-radius: 4px; /* Agregar esquinas redondeadas */
+  cursor: pointer; /* Cambiar el cursor al pasar el ratón */
+  margin-right: 10px; /* Agregar espacio entre botones */
+}
+
+.nav-button:hover {
+  background-color: #6cabee;
+}
+
+.navbar-brand {
+  color: white; /* Cambiar el color del texto de los enlaces */
+  font-size: 24px; /* Cambiar el tamaño del texto de los enlaces */
+}
+
+#clearButton {
+  margin-left: 20px; /* Añadir margen izquierdo al botón */
+}
+
+/* Personalizar el botón de "Salir" */
+#clearButton.btn {
+  font-weight: bold;
+}
+
+#clearButton.btn:hover {
+  background-color: #dc3545; /* Cambiar el color de fondo al pasar el ratón sobre el botón */
+  color: white; /* Cambiar el color del texto al pasar el ratón sobre el botón */
+}
+
+#ButtonNav {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.top-row,
+.bottom-row {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.menu-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+#zonas-comunes th {
+  background-color: #007bff;
+  color: #fff;
+  font-size: 1.2em;
+  padding: 10px;
+}
+
+#especificaciones th {
+  background-color: #007bff;
+  color: #fff;
+  font-size: 1.2em;
+  padding: 10px;
+}
+
+#acabados th {
+  background-color: #007bff;
+  color: #fff;
+  font-size: 1.2em;
+  padding: 10px;
+}
+
+#zonas-comunes th:hover {
+  background-color: #0056b3;
+}
+
+#especificaciones th:hover {
+  background-color: #0056b3;
+}
+
+#acabados th:hover {
+  background-color: #0056b3;
+}
+
+.button-direccion {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #007bff; 
+  color: #ffffff; 
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); 
+  display: block; 
+  margin: 0 auto; 
+}
+
+.button-direccion:hover {
+  background-color: #0056b3; 
+}
+
+.acordeon-container {
+  margin-top: 40px;
+  background-color: #EAEAEA;
+  padding: 20px;
+  border-radius: 10px;
+  position: relative;
+  cursor: pointer;
+}
+
+.acordeon-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.acordeon-body {
+  margin-top: 10px;
+}
+
+.flecha {
+  font-size: 20px;
+  margin-right: 10px;
+  transition: transform 0.3s ease;
+}
+
+.abajo::before {
+  content: '\25BC'; /* Carácter Unicode para flecha hacia abajo */
+  transform: rotate(180deg);
+}
+
+.arriba::before {
+  content: '\25BC'; /* Carácter Unicode para flecha hacia abajo */
+}
+
+.center-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.center-button:hover {
+  background-color: #1d4a92;
+}
+
+
+@media screen and (max-width: 767px) {
+  #ButtonNav,
+  #ButtonNavLeft {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 1100px) {
+  form {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f7f7f7;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+}
+
+/* inicio campos de dirección proyecto y de venta  */
+
+@media (max-width: 991px) and (min-width: 770px) {
+  #item-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .item {
+    width: calc(33.33% - 20px);
+    margin-bottom: 10px;
+  }
+  #input-numeral{
+    width: 92%;
+  }
+}
+
+@media (max-width: 770px) and (min-width: 553px) {
+  #item-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .item {
+    width: calc(43.33% - 15px);
+    margin-bottom: 10px;
+  }
+
+  .select-tipovia {
+    width: 95%;
+  }
+
+  #input-numeral{
+    width: 92%;
+  }
+}
+
+
+@media (max-width: 553px){
+  #item-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .item {
+    width: calc(60.33% - 5px);
+    margin-bottom: 10px;
+  }
+
+  .select-tipovia {
+    width: 100%;
+  }
+
+  #input-numeral{
+    width: 92%;
+  }
+}
+/* fin campos de dirección proyecto y de venta  */
+
+/*  Inicio tabla de contactos */
+
+
+/*  Fin tabla de contactos */
