@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Form, FormControl, Button, Modal } from 'react-bootstrap';
+import { Table, Form, Button, Modal } from 'react-bootstrap';
 
-import { FaSave, FaCheck, FaTrash, FaPlus, FaChevronUp, FaChevronDown } from 'react-icons/fa';
+import { FaCheck, FaPlus, FaChevronUp, FaChevronDown } from 'react-icons/fa';
 import './StageFormEdit.css';
 import { innerFinishDataStage } from '../../utils';
 import { COMPANIES } from '../../helpers/constants';
@@ -12,12 +12,13 @@ const ProjectStageFormEdit = ({
   allStagesCompanies,
   setAllStageCompanies,
   allStagesInnerFinished,
-  setInnerFinishedDataGlobal
+  setInnerFinishedDataGlobal,
+  allStagesTypes,
+  setAllStagesTypesGlobal
 }) => {
   const [answers, setAnswers] = useState(etapa);
   const [hasSalesRoom, setHasSalesRoom] = useState('');
   const [showSalesRoomQuestion, setShowSalesRoomQuestion] = useState(false);
-  const [buttonClicked, setButtonClicked] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [dotacion, setDotacion] = useState('');
@@ -29,26 +30,7 @@ const ProjectStageFormEdit = ({
   const [tiposProyecto, setTiposProyecto] = useState('');
   const [isTableVisible1, setTableVisible1] = useState(false);
   const [tipoVivienda, setTipoVivienda] = useState('');
-  const [tiposProyectoArray, setTiposProyectoArray] = useState([
-    {
-      nombre: '',
-      tipo_vivienda: '',
-      numero_unidades: '',
-      uso: '',
-      area: '',
-      dotacion_1: '',
-      dotacion_2: '',
-      dotacion_3: '',
-      dotacion_4: '',
-      dotacion_5: '',
-      venta: '',
-      renuncias: '',
-      saldo: '',
-      precio: '',
-      precio_m2: '',
-      novedad: ''
-    }
-  ]);
+
   const [innerFinishedData, setInnerFinishedData] = useState(
     allStagesInnerFinished
       .filter(({ etapa: stageId }) => stageId === etapa.id)
@@ -61,6 +43,8 @@ const ProjectStageFormEdit = ({
         return prev;
       }, {})
   );
+
+  const [allStagesTypesLocal, setAllStagesTypesLocal] = useState(allStagesTypes.filter(({ etapa: stageId }) => stageId === etapa.id));
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -116,126 +100,6 @@ const ProjectStageFormEdit = ({
     setTableVisible1(!isTableVisible1);
   };
 
-  const agregarFilaTipo = () => {
-    const nuevoTipo = {
-      nombre: '',
-      tipo_vivienda: '',
-      uso: '',
-      area: '',
-      dotacion_1: '',
-      dotacion_2: '',
-      dotacion_3: '',
-      dotacion_4: '',
-      dotacion_5: '',
-      venta: '',
-      renuncias: '',
-      saldo: '',
-      precio: '',
-      precio_m2: '',
-      novedad: ''
-    };
-    setTiposProyectoArray([...tiposProyectoArray, nuevoTipo]);
-  };
-  const handleOptionSelectExterior = (id, option) => {
-    const selectedOptionsExterior = { ...answers.q18 };
-
-    if (!selectedOptionsExterior[id]) {
-      selectedOptionsExterior[id] = [option];
-    } else {
-      const optionIndex = selectedOptionsExterior[id].indexOf(option);
-      if (optionIndex === -1) {
-        selectedOptionsExterior[id].push(option);
-      } else {
-        selectedOptionsExterior[id].splice(optionIndex, 1);
-        if (selectedOptionsExterior[id].length === 0) {
-          delete selectedOptionsExterior[id];
-        }
-      }
-    }
-    setAnswers({ ...answers, q18: selectedOptionsExterior });
-  };
-
-  const USO_TIPOS_RESIDENCIALES = [
-    { value: '', label: 'Seleccione' },
-    { value: 0, label: 'Apartamento' },
-    { value: 1, label: 'Casa' }
-  ];
-
-  const USO_TIPOS_NO_RESIDENCIALES = [
-    { value: '', label: 'Seleccione' },
-    { value: 0, label: 'Apartamento' },
-    { value: 1, label: 'Bodega' },
-    { value: 2, label: 'Comunal' },
-    { value: 3, label: 'Consultorio' },
-    { value: 4, label: 'Institucional' },
-    { value: 5, label: 'Local' },
-    { value: 6, label: 'Oficina' },
-    { value: 7, label: 'Parqueadero' },
-    { value: 8, label: 'Servicios' },
-    { value: 9, label: 'Sin definir NR' }
-  ];
-
-  const eliminarTipo = index => {
-    const nuevosTipos = [...tiposProyectoArray];
-    nuevosTipos.splice(index, 1);
-    setTiposProyectoArray(nuevosTipos);
-  };
-
-  const validarCorreo = correo => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(correo);
-  };
-
-  const handleModalSubmit = () => {
-    const requestBody = {
-      // tipo: id_tipo,
-      dotacion: dotacion,
-      unidades: unidades
-    };
-  };
-
-  const validarTelefono = telefono => {
-    if (telefono.length !== 10 && telefono.length !== 8) {
-      return 'El teléfono debe tener entre 8 y 10 dígitos';
-    }
-    return '';
-  };
-
-  const actualizarErrores = (index, error) => {
-    setErrores(prevErrores => {
-      const nuevosErrores = [...prevErrores];
-      nuevosErrores[index] = error;
-      return nuevosErrores;
-    });
-  };
-
-  const handleInputChangeTipo = (e, index) => {
-    const { name, value } = e.target;
-    const newData = [...tiposProyectoArray];
-    newData[index][name] = value;
-    //console.log(tiposProyectoArray);
-
-    if (name === 'correo') {
-      const esValido = validarCorreo(value);
-      setCorreoValido(esValido);
-    }
-
-    // Validación del número de teléfono
-    const telefonoError = validarTelefono(value);
-    actualizarErrores(index, telefonoError);
-
-    setTiposProyecto(newData);
-    setAnswers({
-      ...answers,
-      q17: newData
-    });
-  };
-
-  const handleTipoViviendaChange = e => {
-    setTipoVivienda(e.target.value);
-    // setResidencial(e.target.value === "1"); // Actualiza el estado residencial si el valor es "1" (Residencial)
-  };
-
   const handleAnswerChange = (questionId, selectedOption) => {
     setAnswers({
       ...answers,
@@ -247,11 +111,49 @@ const ProjectStageFormEdit = ({
     }
   };
 
+  const addStagesTypeLocal = () => {
+    setAllStagesTypesLocal(prev =>
+      prev.concat({
+        etapa: etapa.id,
+        nombre: '',
+        tipo_vivienda: '',
+        uso: '',
+        numero_unidades: '',
+        area_unidades_area_disponible: '',
+        alcoba: '',
+        baño: '',
+        dotacion_3: '',
+        dotacion_4: '',
+        dotación_5: '',
+        precios_miles: 0,
+        precios_m2_miles: 0,
+        novedad: '',
+        venta: 0,
+        renuncias: 0,
+        saldo: 0,
+        area_vendida_m2: 0,
+        area_desistida_m: 0,
+        pendiente_vender_m2: 0
+      })
+    );
+  };
+
   useEffect(() => {
-    console.log('useEffect');
-    console.log({ etapaId: etapa.id, innerFinishedData });
     setInnerFinishedDataGlobal(etapa.id, innerFinishedData);
   }, [innerFinishedData]);
+
+  useEffect(() => {
+    setAllStagesTypesGlobal(etapa.id, allStagesTypesLocal);
+    // console.log({ etapa: etapa.id, allStagesTypesLocal });
+  }, [allStagesTypesLocal]);
+
+  const changeStageTypeHandler = (rowIndex, key, event) => {
+    setAllStagesTypesLocal(prev => {
+      const aux = [...prev];
+      aux[rowIndex][key] = event.target.value;
+      return aux;
+    });
+  };
 
   return (
     <div className='form-container'>
@@ -501,9 +403,7 @@ const ProjectStageFormEdit = ({
             <Button variant='secondary' onClick={handleModalClose}>
               Cerrar
             </Button>
-            <Button variant='primary' onClick={handleModalSubmit}>
-              Enviar
-            </Button>
+            <Button variant='primary'>Enviar</Button>
           </Modal.Footer>
         </Modal>
         <div class='table-responsive'>
@@ -536,15 +436,37 @@ const ProjectStageFormEdit = ({
               </tr>
             </thead>
             <tbody>
-              {tiposProyectoArray.map((item, index) => (
+              {allStagesTypesLocal.map((item, index) => (
                 <tr key={index}>
-                  {[{ key: '' }].map(({ key }) => (
+                  {[
+                    // ...(item.id && { id_tipo: item.id }),
+                    // etapa: stageId,
+                    { key: 'nombre' },
+                    { key: 'tipo_vivienda' },
+                    { key: 'uso' },
+                    { key: 'numero_unidades' },
+                    { key: 'area_unidades_area_disponible' },
+                    { key: 'alcoba' },
+                    { key: 'baño' },
+                    { key: 'dotacion_3' },
+                    { key: 'dotacion_4' },
+                    { key: 'dotación_5' },
+                    { key: 'venta' },
+                    { key: 'renuncias' },
+                    { key: 'saldo' },
+                    { key: 'precios_miles' },
+                    { key: 'precios_m2_miles' },
+                    { key: 'novedad' }
+                    // { key: 'area_vendida_m2' },
+                    // { key: 'area_desistida_m' },
+                    // { key: 'pendiente_vender_m2' }
+                  ].map(({ key }) => (
                     <td>
                       <Form.Control
                         type='text'
                         name={key}
-                        value={'XXX'}
-                        onChange={event => {}}
+                        value={item[key]}
+                        onChange={changeStageTypeHandler.bind(null, index, key)}
                         style={{
                           fontSize: '16px',
                           padding: '10px',
@@ -558,7 +480,7 @@ const ProjectStageFormEdit = ({
               ))}
             </tbody>
           </Table>
-          <Button onClick={agregarFilaTipo}>
+          <Button onClick={addStagesTypeLocal}>
             <FaPlus style={{ marginRight: '5px', marginBottom: '5px' }} /> Agregar Nuevo Tipo
           </Button>
         </div>
@@ -611,282 +533,3 @@ const ProjectStageFormEdit = ({
   );
 };
 export default ProjectStageFormEdit;
-
-/* <td>
-                    <Form.Control
-                      type='text'
-                      name='nombre'
-                      value={item.nombre}
-                      onChange={e => handleInputChangeTipo(e, index)}
-                      style={{
-                        fontSize: '16px',
-                        padding: '10px',
-                        width: '155%',
-                        marginLeft: '-18px'
-                      }}
-                    />
-                  </td>
-                  <td>
-                    <Form.Control
-                      as='select'
-                      name='tipo_vivienda'
-                      value={tipoVivienda}
-                      onChange={handleTipoViviendaChange}
-                      style={{
-                        fontSize: '16px',
-                        padding: '10px',
-                        width: '155%',
-                        marginLeft: '-18px'
-                      }}
-                      disabled={answers.q4 !== '0' && answers.q4 !== '1'}>
-                      <option value=''>Seleccione</option>
-                      <option value='0'>Vivienda de Interés Social (VIS)</option>
-                      <option value='1'>Vivienda de Interés Prioritario (VIP)</option>
-                      <option value='2'>No Vivienda de Interés social ( No Vis) </option>
-                    </Form.Control>
-                  </td>
-                  <td>
-                    <Form.Control
-                      as='select'
-                      type='text'
-                      name='uso'
-                      value={item.uso}
-                      onChange={e => handleInputChangeTipo(e, index)}
-                      style={{
-                        fontSize: '16px',
-                        padding: '10px',
-                        width: '210%',
-                        marginLeft: '-17px'
-                      }}>
-                      {tipoVivienda === ''
-                        ? // Si no se ha seleccionado un tipo de vivienda, mostrar opciones no residenciales
-                          USO_TIPOS_NO_RESIDENCIALES.map(opcion => (
-                            <option key={opcion.value} value={opcion.value}>
-                              {opcion.label}
-                            </option>
-                          ))
-                        : // Si se seleccionó un tipo de vivienda, mostrar opciones residenciales
-                          USO_TIPOS_RESIDENCIALES.map(opcion => (
-                            <option key={opcion.value} value={opcion.value}>
-                              {opcion.label}
-                            </option>
-                          ))}
-                    </Form.Control>
-                  </td>
-                  <td>
-                    <Form.Control
-                      type='text'
-                      name='numero_unidades'
-                      value={item.numero_unidades}
-                      onChange={e => handleInputChangeTipo(e, index)}
-                      disabled={answers.q3 !== '0'}
-                      style={{
-                        fontSize: '16px',
-                        padding: '10px',
-                        width: '198%',
-                        marginLeft: '-17px'
-                      }}
-                    />
-                  </td>
-                  <td>
-                    <Form.Control
-                      type='number'
-                      name='area'
-                      value={item.area}
-                      onChange={e => handleInputChangeTipo(e, index)}
-                      onInput={handleNumericInput}
-                      style={{
-                        fontSize: '16px',
-                        padding: '10px',
-                        width: '185%',
-                        marginLeft: '-17px'
-                      }}
-                      min='0'
-                    />
-                  </td>
-                  <td>
-                    <Form.Control
-                      type='number'
-                      name='dotacion_1'
-                      value={item.dotacion_1}
-                      onChange={e => handleInputChangeTipo(e, index)}
-                      style={{
-                        fontSize: '16px',
-                        padding: '10px',
-                        width: '138%',
-                        marginLeft: '-17px'
-                      }}
-                      min='0'
-                      onInput={handleNumericInput}
-                    />
-                  </td>
-                  <td>
-                    <Form.Control
-                      type='number'
-                      name='dotacion_2'
-                      value={item.dotacion_2}
-                      onChange={e => handleInputChangeTipo(e, index)}
-                      style={{
-                        fontSize: '16px',
-                        padding: '10px',
-                        width: '138%',
-                        marginLeft: '-17px'
-                      }}
-                      min='0'
-                      onInput={handleNumericInput}
-                    />
-                  </td>
-                  <td>
-                    <Form.Control
-                      type='number'
-                      name='dotacion_3'
-                      value={item.dotacion_3}
-                      onChange={e => handleInputChangeTipo(e, index)}
-                      onClick={handleModalShow}
-                      style={{
-                        fontSize: '16px',
-                        padding: '10px',
-                        width: '138%',
-                        marginLeft: '-17px'
-                      }}
-                      min='0'
-                      onInput={handleNumericInput}
-                    />
-                  </td>
-                  <td>
-                    <Form.Control
-                      type='number'
-                      name='dotacion_4'
-                      value={item.dotacion_4}
-                      onChange={e => handleInputChangeTipo(e, index)}
-                      onClick={handleModalShow}
-                      style={{
-                        fontSize: '16px',
-                        padding: '10px',
-                        width: '138%',
-                        marginLeft: '-17px'
-                      }}
-                      min='0'
-                      onInput={handleNumericInput}
-                    />
-                  </td>
-                  <td>
-                    <Form.Control
-                      type='number'
-                      name='dotacion_5'
-                      value={item.dotacion_5}
-                      onChange={e => handleInputChangeTipo(e, index)}
-                      onClick={handleModalShow}
-                      style={{
-                        fontSize: '16px',
-                        padding: '10px',
-                        width: '138%',
-                        marginLeft: '-17px'
-                      }}
-                      min='0'
-                      onInput={handleNumericInput}
-                    />
-                  </td>
-                  <td>
-                    <Form.Control
-                      type='number'
-                      name='venta'
-                      value={item.venta}
-                      onChange={e => handleInputChangeTipo(e, index)}
-                      disabled={answers.q3 !== '0'}
-                      style={{
-                        fontSize: '16px',
-                        padding: '10px',
-                        width: '170%',
-                        marginLeft: '-17px'
-                      }}
-                      min='0'
-                      onInput={handleNumericInput}
-                    />
-                  </td>
-                  <td>
-                    <Form.Control
-                      type='number'
-                      name='renuncias'
-                      value={item.renuncias}
-                      onChange={e => handleInputChangeTipo(e, index)}
-                      disabled={answers.q3 !== '0'}
-                      style={{
-                        fontSize: '16px',
-                        padding: '10px',
-                        width: '140%',
-                        marginLeft: '-17px'
-                      }}
-                      min='0'
-                      onInput={handleNumericInput}
-                    />
-                  </td>
-                  <td>
-                    <Form.Control
-                      type='number'
-                      name='saldo'
-                      value={item.saldo}
-                      onChange={e => handleInputChangeTipo(e, index)}
-                      disabled={answers.q3 !== '0'}
-                      style={{
-                        fontSize: '16px',
-                        padding: '10px',
-                        width: '165%',
-                        marginLeft: '-17px'
-                      }}
-                      min='0'
-                      onInput={handleNumericInput}
-                    />
-                  </td>
-                  <td>
-                    <Form.Control
-                      type='number'
-                      name='precio'
-                      value={item.precio}
-                      onChange={e => handleInputChangeTipo(e, index)}
-                      disabled={answers.q3 !== '0'}
-                      style={{
-                        fontSize: '16px',
-                        padding: '10px',
-                        width: '165%',
-                        marginLeft: '-17px'
-                      }}
-                      min='0'
-                      onInput={handleNumericInput}
-                      required
-                    />
-                  </td>
-                  <td>
-                    <Form.Control
-                      type='text'
-                      name='precio_m2'
-                      value={item.precio_m2}
-                      onChange={e => handleInputChangeTipo(e, index)}
-                      disabled={answers.q3 !== '0'}
-                      style={{
-                        fontSize: '16px',
-                        padding: '10px',
-                        width: '165%',
-                        marginLeft: '-17px'
-                      }}
-                    />
-                  </td>
-                  <td>
-                    <Form.Control
-                      type='text'
-                      name='novedad'
-                      value={item.novedad}
-                      onChange={e => handleInputChangeTipo(e, index)}
-                      style={{
-                        fontSize: '16px',
-                        padding: '10px',
-                        width: '145%',
-                        marginLeft: '-17px'
-                      }}
-                    />
-                  </td>
-                  <td>
-                    <Button style={{ backgroundColor: '#EF5350', color: 'white' }} onClick={() => eliminarTipo(index)}>
-                      <FaTrash />
-                    </Button>
-                  </td> */

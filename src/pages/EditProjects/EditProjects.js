@@ -111,6 +111,7 @@ const InsertarProyectoForm = () => {
   });
   const [allStagesCompanies, setAllStageCompanies] = useState([]);
   const [allStagesInnerFinished, setAllStagesInnerFinished] = useState([]);
+  const [allStagesTypes, setAllStagesTypes] = useState([]);
   const [codigoProyecto, setCodigoProyecto] = useState('');
   const [nombreProyecto, setNombreProyecto] = useState('');
   const [longitud, setLongitud] = useState('');
@@ -476,8 +477,10 @@ const InsertarProyectoForm = () => {
       );
 
       const listStageData = await queryGETBackend(`lista_etapas/id_proyecto=${proyecto.id}/`);
-      //console.log('Datos de lista etapas encontrados', listStageData);
-      const responses = await Promise.all(
+
+      const [allProjectInformation] = await queryGETBackend(`total_project/id=${proyecto.id}/`);
+
+      const stagesData = await Promise.all(
         listStageData.map(async item => {
           // Compañias
           const fetchedCompanies = await queryGETBackend(`company_etapa_list/id=${item.id}/`);
@@ -499,25 +502,19 @@ const InsertarProyectoForm = () => {
             );
           });
 
-          // Datos de tipo
-          const stageTypeData = await queryGETBackend(`datos_tipo/id=${item.id}/`);
-
-          // Datos dotaciones
-          const stageDotationsData = await queryGETBackend(`datos_dotacion/id=${item.id}/`);
-
-          // Datos historico ventas
-          const stageHistoricSales = await queryGETBackend(`datos_historico_ventas_unidades/id=${item.id}/`);
+          const allProjectInformationCurrentStage = allProjectInformation.etapas.find(({ id }) => id === item.id);
+          const stageTypes = allProjectInformationCurrentStage?.tipo || [];
 
           // Acabados interiores
           const stageInnerFinished = await queryGETBackend(`acabado_interior_list/id_etapa=${item.id}/`);
 
-          return { stageId: item.id, allCurrentCompanies, stageTypeData, stageDotationsData, stageHistoricSales, stageInnerFinished };
+          return { stageId: item.id, allCurrentCompanies, stageTypes, stageInnerFinished };
         })
       );
 
-      console.log({ responses });
+      console.log({ allProjectInformation, stagesData });
 
-      const listStageProyectoArrayNew = responses.reduce((prev, { allCurrentCompanies }) => {
+      const listStageProyectoArrayNew = stagesData.reduce((prev, { allCurrentCompanies }) => {
         return prev.concat(
           allCurrentCompanies.map(item => ({
             ...(item.id && { id: item.id }),
@@ -535,7 +532,7 @@ const InsertarProyectoForm = () => {
         );
       }, []);
 
-      const allStagesInnerFinishedNew = responses.reduce((prev, { stageId, stageInnerFinished }) => {
+      const allStagesInnerFinishedNew = stagesData.reduce((prev, { stageId, stageInnerFinished }) => {
         return prev.concat(
           stageInnerFinished.map(item => ({
             ...(item.id && { id: item.id }),
@@ -546,15 +543,43 @@ const InsertarProyectoForm = () => {
         );
       }, []);
 
+      const allStagesTypesNew = stagesData.reduce((prev, { stageId, stageTypes }) => {
+        return prev.concat(
+          stageTypes.map(item => ({
+            ...(item.id && { id_tipo: item.id }),
+            etapa: stageId,
+            nombre: item.nombre,
+            tipo_vivienda: item.tipo_vivienda,
+            uso: item.uso,
+            numero_unidades: item.numero_unidades,
+            area_unidades_area_disponible: item.area_unidades_area_disponible,
+            alcoba: item?.dotaciones?.[0]?.alcoba || '',
+            baño: item?.dotaciones?.[0]?.baño || '',
+            dotacion_3: item?.dotaciones?.[0]?.dotacion_3 || '',
+            dotacion_4: item?.dotaciones?.[0]?.dotacion_4 || '',
+            dotación_5: item?.dotaciones?.[0]?.dotacion_5 || '',
+            precios_miles: item?.ventas?.[0]?.precios_miles || 0,
+            precios_m2_miles: item?.ventas?.[0]?.precios_m2_miles || 0,
+            novedad: item?.ventas?.[0]?.novedad || '',
+            venta: item?.ventas?.[0]?.venta || 0,
+            renuncias: item?.ventas?.[0]?.renuncias || 0,
+            saldo: item?.ventas?.[0]?.saldo || 0,
+            area_vendida_m2: item?.ventas?.[0]?.area_vendida_m2 || 0,
+            area_desistida_m: item?.ventas?.[0]?.area_desistida_m || 0,
+            pendiente_vender_m2: item?.ventas?.[0]?.pendiente_vender_m2 || 0
+          }))
+        );
+      }, []);
+
       setListStageProyectoArray(listStageData);
       setAllStageCompanies(listStageProyectoArrayNew);
       setAllStagesInnerFinished(allStagesInnerFinishedNew);
+      setAllStagesTypes(allStagesTypesNew);
     };
     asyncFunction();
   }, []);
 
   const handleSubmit = async event => {
-    //console.log(caracteristicasFetch, 'Estas son las caracteristicas de el proyecto de la tabla');
     event.preventDefault();
     const formData = {
       id: idProject,
@@ -596,10 +621,7 @@ const InsertarProyectoForm = () => {
       medicion: '630d3ab5-2a22-4ab6-a21e-3f198f515f84'
     };
 
-    //console.log('Estos son los datos del patch', formData);
-
-    const insertedProjectData = await queryBackend('PATCH', 'datos_proyecto/', formData);
-    //console.log('Proyecto insertado exitosamente', insertedProjectData);
+    await queryBackend('PATCH', 'datos_proyecto/', formData);
 
     if (Array.isArray(contactoProyecto) && contactoProyecto.length > 0) {
       const formatedContact = contactoProyecto.map(contacto => ({
@@ -610,8 +632,7 @@ const InsertarProyectoForm = () => {
         email: contacto.correo,
         tiene_autorizacion: contacto.autorizacion
       }));
-      const contactsResponse = await queryBackend('PATCH', 'contacto/', formatedContact);
-      //console.log('Contactos actualizados correctamente', contactsResponse);
+      await queryBackend('PATCH', 'contacto/', formatedContact);
     }
     const patchAcabadosExteriores = [];
     for (const [categoria, acabados] of Object.entries(acabadosExterioresFetch)) {
@@ -620,16 +641,12 @@ const InsertarProyectoForm = () => {
           proyecto: idProject,
           categoria: parseInt(categoria),
           acabado: parseInt(acabado)
-          // id: id,
         };
         patchAcabadosExteriores.push(patchItem);
       });
     }
 
-    //console.log(patchAcabadosExteriores, 'Estos son los datos q vamos a enviar de acabados exteriores');
-
-    const finishedDetailsResponse = await queryBackend('PATCH', 'acabado_exterior/', patchAcabadosExteriores);
-    //console.log('acabados actualizados correctamente', finishedDetailsResponse);
+    await queryBackend('PATCH', 'acabado_exterior/', patchAcabadosExteriores);
 
     const patchTechnicalFeatures = caracteristicasFetch.map(item => ({
       ...(item.id && { id: item.id }),
@@ -639,162 +656,88 @@ const InsertarProyectoForm = () => {
       especificacion: parseInt(item.especificacion)
     }));
 
-    //console.log('Estos son los datos q enviamos a caracteristicas:', patchTechnicalFeatures);
+    await queryBackend('PATCH', 'caracteristica_tecnica/', patchTechnicalFeatures);
 
-    const technicalCharacteristicsResponse = await queryBackend('PATCH', 'caracteristica_tecnica/', patchTechnicalFeatures);
-    //console.log('caracteristicas tecnicas actualizados correctamente', technicalCharacteristicsResponse);
+    await queryBackend('PATCH', 'company_etapa/', allStagesCompanies);
 
-    //console.log('https://back-camacol-service-q2nhgfzuoq-uc.a.run.app/proyecto/company_etapa/ allStagesCompanies', allStagesCompanies);
+    console.log({ allStagesTypes });
 
-    const company_etapa = await queryBackend('PATCH', 'company_etapa/', allStagesCompanies);
-    //console.log('compañias actualizados correctamente', stagesCompaniesResponse);
+    await queryBackend(
+      'PATCH',
+      'cambiar_datos_tipo/',
+      allStagesTypes.map(({ id_tipo, etapa, nombre, tipo_vivienda, uso, numero_unidades, area_unidades_area_disponible }) => ({
+        ...(id_tipo && { id_tipo }),
+        etapa,
+        nombre,
+        tipo_vivienda,
+        uso,
+        numero_unidades,
+        area_unidades_area_disponible
 
-    /**
-        "id": "0cd16753-b4ea-47aa-a7f7-e5468a8ebf2c",
-        "comment": null,
-        "is_active": true,
-        "id_tipo": "12345_098",
-        "nombre": "qwerty",
-        "tipo_vivienda": 1,
-        "uso": 3,
-        "numero_unidades": 2,
-        "area_unidades_area_disponible": 123,
-        "fecha_creado": "2023-10-27T02:16:23.069438Z",
-        "fecha_modificado": "2023-10-27T02:16:23.069504Z",
-        "etapa": "2f1a33a5-aa04-424e-bd8e-b8efd8b01690"
-     */
-    const cambiar_datos_tipo = await queryBackend('PATCH', 'cambiar_datos_tipo/', [
-      {
-        id_tipo: null,
-        Etapa: null,
-        Nombre: null,
-        Tipo_vivieda: null,
-        Uso: null,
-        numero_unidades: null,
-        area_unidades_area_disponible: null
-      }
-    ]);
+        // (1)
+        // alcoba,
+        // baño,
+        // dotacion_3,
+        // dotacion_4,
+        // dotación_5
 
-    /*
-    [
-    {
-        "id": 2045,
-        "is_active": true,
-        "alcoba": null,
-        "baño": null,
-        "dotacion_3": null,
-        "dotacion_4": null,
-        "dotacion_5": null,
-        "tipo": "74d2e1eb-d7d8-4520-bce7-599ebb7e6202"
-    },
-    {
-        "id": 2048,
-        "is_active": true,
-        "alcoba": null,
-        "baño": null,
-        "dotacion_3": "8",
-        "dotacion_4": "12",
-        "dotacion_5": "15",
-        "tipo": "74d2e1eb-d7d8-4520-bce7-599ebb7e6202"
-    },
-    {
-        "id": 2049,
-        "is_active": true,
-        "alcoba": null,
-        "baño": null,
-        "dotacion_3": "8",
-        "dotacion_4": "12",
-        "dotacion_5": "15",
-        "tipo": "74d2e1eb-d7d8-4520-bce7-599ebb7e6202"
-    },
-    {
-        "id": 2050,
-        "is_active": true,
-        "alcoba": null,
-        "baño": null,
-        "dotacion_3": "8",
-        "dotacion_4": "12",
-        "dotacion_5": "15",
-        "tipo": "74d2e1eb-d7d8-4520-bce7-599ebb7e6202"
-    },
-    {
-        "id": 2051,
-        "is_active": true,
-        "alcoba": null,
-        "baño": null,
-        "dotacion_3": "8",
-        "dotacion_4": "12",
-        "dotacion_5": "15",
-        "tipo": "74d2e1eb-d7d8-4520-bce7-599ebb7e6202"
-    },
-    {
-        "id": 2052,
-        "is_active": true,
-        "alcoba": null,
-        "baño": null,
-        "dotacion_3": "20",
-        "dotacion_4": "12",
-        "dotacion_5": "15",
-        "tipo": "74d2e1eb-d7d8-4520-bce7-599ebb7e6202"
-    }
-]
-    */
-    const datos_dotacion_detail = await queryBackend('PATCH', 'datos_dotacion_detail/', [
-      {
-        tipo: null,
-        Alcoba: null,
-        Baño: null,
-        dotacion_3: null,
-        dotacion_4: null,
-        dotación_5: null
-      }
-    ]);
+        // (2)
+        // precios_miles,
+        // precios_m2_miles,
+        // novedad,
+        // venta,
+        // renuncias,
+        // saldo,
+        // area_vendida_m2,
+        // area_desistida_m,
+        // pendiente_vender_m2
+      }))
+    );
 
-    /*
-    [
-    {
-        "id": 6341,
-        "precios_miles": 0.0,
-        "precios_m2_miles": 0.0,
-        "novedad": "5",
-        "fecha_creado": "2023-12-28T17:26:10.039064Z",
-        "fecha_modificado": "2023-12-28T17:26:10.039096Z",
-        "venta": 5,
-        "renuncias": 5,
-        "saldo": 5,
-        "tipo": "4c139a5d-ecbd-427a-8458-3f442b617659"
-    }
-]
-    */
-    const datos_historico_ventas_unidades_detail = await queryBackend('PATCH', 'datos_historico_ventas_unidades_detail/', [
-      {
-        tipo: null,
-        venta: null,
-        renuncias: null,
-        saldo: null,
-        precios_miles: null,
-        precios_m2_miles: null,
-        novedad: null
-      }
-    ]);
+    await queryBackend(
+      'PATCH',
+      'datos_dotacion_detail/',
+      allStagesTypes.map(({ id_tipo, alcoba, baño, dotacion_3, dotacion_4, dotación_5 }) => ({
+        ...(id_tipo && { tipo: id_tipo }),
+        alcoba,
+        baño,
+        dotacion_3,
+        dotacion_4,
+        dotación_5
+      }))
+    );
 
-    /*
-    {
-        "id": 2,
-        "comment": null,
-        "categoria": 67, -> Id junto con Nombre
-        "acabado": 205,
-        "etapa": "3a0d1744-f96e-4e3d-b333-04ffdfc9ceaf"
-    },
-    {
-        "id": 3,
-        "comment": null,
-        "categoria": 232,
-        "acabado": 249,
-        "etapa": "3a0d1744-f96e-4e3d-b333-04ffdfc9ceaf"
-    },
-    */
-    const acabado_interior = await queryBackend('PATCH', 'acabado_interior/', allStagesInnerFinished);
+    await queryBackend(
+      'PATCH',
+      'datos_historico_ventas_unidades_detail/',
+      allStagesTypes.map(
+        ({
+          id_tipo,
+          precios_miles,
+          precios_m2_miles,
+          novedad,
+          venta,
+          renuncias,
+          saldo,
+          area_vendida_m2,
+          area_desistida_m,
+          pendiente_vender_m2
+        }) => ({
+          ...(id_tipo && { tipo: id_tipo }),
+          precios_miles,
+          precios_m2_miles,
+          novedad,
+          venta,
+          renuncias,
+          saldo,
+          area_vendida_m2,
+          area_desistida_m,
+          pendiente_vender_m2
+        })
+      )
+    );
+
+    await queryBackend('PATCH', 'acabado_interior/', allStagesInnerFinished);
   };
 
   if (!exteriorFinishData || exteriorFinishData.length === 0) {
@@ -814,6 +757,15 @@ const InsertarProyectoForm = () => {
       console.log('setInnerFinishedDataGlobal');
       console.log({ stageId, params, prev, newAllStagesInnerFinished });
       return newAllStagesInnerFinished;
+    });
+  };
+
+  const setAllStagesTypesGlobal = (stageId, params) => {
+    setAllStagesTypes(prev => {
+      const allWithoutStage = prev.filter(item => item.etapa !== stageId);
+      const newAllStagesTypes = allWithoutStage.concat(params);
+      // console.log({ allWithoutStage, newAllStagesTypes });
+      return newAllStagesTypes;
     });
   };
 
@@ -1377,7 +1329,7 @@ const InsertarProyectoForm = () => {
                       <tbody>
                         {certificaciones.map((certificacion, index) => (
                           <tr key={index}>
-                            <td>{certificadosSostenibles[certificacion][certificacion]}</td>
+                            <td>{certificadosSostenibles?.[certificacion]?.[certificacion]}</td>
                             <td>
                               <Button
                                 style={{
@@ -1446,7 +1398,7 @@ const InsertarProyectoForm = () => {
                       <tbody>
                         {caracteristicas.map((caracteristica, index) => (
                           <tr key={index}>
-                            <td>{caracteristicasProyecto[caracteristica][caracteristica]}</td>
+                            <td>{caracteristicasProyecto?.[caracteristica]?.[caracteristica]}</td>
                             <td>
                               <Button
                                 style={{
@@ -1755,6 +1707,8 @@ const InsertarProyectoForm = () => {
                             setAllStageCompanies={setAllStageCompanies}
                             allStagesInnerFinished={allStagesInnerFinished}
                             setInnerFinishedDataGlobal={setInnerFinishedDataGlobal}
+                            allStagesTypes={allStagesTypes}
+                            setAllStagesTypesGlobal={setAllStagesTypesGlobal}
                           />
                         </div>
                       )}
